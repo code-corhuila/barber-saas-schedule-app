@@ -3,6 +3,7 @@ import type { MountContext } from './shell-contract';
 import { ownBarber, parseRoute, routePath, type Route } from './navigation/routes';
 import { listBarbers } from './schedule/schedule-api';
 import { BarbersPage } from './pages/BarbersPage';
+import { ExceptionsPage } from './pages/ExceptionsPage';
 import { WeekPage } from './pages/WeekPage';
 import { LoadView } from './ui/LoadView';
 import { useLoad } from './ui/load';
@@ -33,18 +34,25 @@ function OwnerApp({ context }: { context: MountContext }) {
   if (route.name === 'barbers') {
     return <BarbersPage api={context.api} onOpen={(barberId) => go({ name: 'week', barberId })} />;
   }
+  if (route.name === 'exceptions') {
+    return <ExceptionsPage api={context.api} barberId={route.barberId} editable
+                           onBack={() => go({ name: 'week', barberId: route.barberId })} />;
+  }
   return <WeekPage api={context.api} barberId={route.barberId} editable onBack={() => go({ name: 'barbers' })}
                    onExceptions={() => go({ name: 'exceptions', barberId: route.barberId })} />;
 }
 
 /** A barber reads only their own week, found by their user id among the barbershop's profiles. */
 function BarberApp({ context, userId }: { context: MountContext; userId: string }) {
+  const [view, setView] = useState<'week' | 'exceptions'>('week');
   const [own, reload] = useLoad(async () => ownBarber((await listBarbers(context.api)).data, userId), [userId],
     'No se pudo cargar tu perfil de barbero.');
   return (
     <LoadView load={own} onRetry={reload} isEmpty={(id) => id === null}
               empty="Aún no tienes perfil de barbero. Pide al administrador de la barbería que lo cree.">
-      {(barberId) => <WeekPage api={context.api} barberId={barberId!} editable={false} onExceptions={() => undefined} />}
+      {(barberId) => (view === 'week'
+        ? <WeekPage api={context.api} barberId={barberId!} editable={false} onExceptions={() => setView('exceptions')} />
+        : <ExceptionsPage api={context.api} barberId={barberId!} editable={false} onBack={() => setView('week')} />)}
     </LoadView>
   );
 }
