@@ -1,11 +1,66 @@
+import { useCallback, useEffect, useState } from 'react';
 import type { MountContext } from './shell-contract';
+import { ownBarber, parseRoute, routePath, type Route } from './navigation/routes';
+import { listBarbers } from './schedule/schedule-api';
+import { BarbersPage } from './pages/BarbersPage';
+import { WeekPage } from './pages/WeekPage';
+import { LoadView } from './ui/LoadView';
+import { useLoad } from './ui/load';
+import { STYLES } from './ui/styles';
 
-/** The schedule domain app. Its screens arrive in the next pull requests. */
-export function App({ context }: { context: MountContext }) {
+/** The path inside the domain from the browser address, e.g. /schedule/abc → /abc. */
+function pathInDomain(basePath: string): string {
+  const path = window.location.pathname;
+  return path.startsWith(basePath) ? path.slice(basePath.length) || '/' : '/';
+}
+
+/** The owner's screens: any barber of their barbershop. */
+function OwnerApp({ context }: { context: MountContext }) {
+  const [route, setRoute] = useState<Route>(() => parseRoute(context.initialPath));
+
+  const go = useCallback((next: Route) => {
+    setRoute(next);
+    context.navigate(context.basePath + routePath(next));
+  }, [context]);
+
+  // The back button changes the address; the shell keeps this app mounted, so follow it here.
+  useEffect(() => {
+    const follow = () => setRoute(parseRoute(pathInDomain(context.basePath)));
+    window.addEventListener('popstate', follow);
+    return () => window.removeEventListener('popstate', follow);
+  }, [context.basePath]);
+
+  if (route.name === 'barbers') {
+    return <BarbersPage api={context.api} onOpen={(barberId) => go({ name: 'week', barberId })} />;
+  }
+  return <WeekPage api={context.api} barberId={route.barberId} editable onBack={() => go({ name: 'barbers' })}
+                   onExceptions={() => go({ name: 'exceptions', barberId: route.barberId })} />;
+}
+
+/** A barber reads only their own week, found by their user id among the barbershop's profiles. */
+function BarberApp({ context, userId }: { context: MountContext; userId: string }) {
+  const [own, reload] = useLoad(async () => ownBarber((await listBarbers(context.api)).data, userId), [userId],
+    'No se pudo cargar tu perfil de barbero.');
   return (
-    <main style={{ padding: '1rem' }}>
-      <h1>Horarios</h1>
-      <p>{context.basePath}</p>
-    </main>
+    <LoadView load={own} onRetry={reload} isEmpty={(id) => id === null}
+              empty="Aún no tienes perfil de barbero. Pide al administrador de la barbería que lo cree.">
+      {(barberId) => <WeekPage api={context.api} barberId={barberId!} editable={false} onExceptions={() => undefined} />}
+    </LoadView>
+  );
+}
+
+/**
+ * The schedule domain app (ADR-013). Everything it requests goes through context.api and it never
+ * stores a token: the session is the shell's (norm 5.4.1).
+ */
+export function App({ context }: { context: MountContext }) {
+  const user = context.session.user();
+  return (
+    <div className="sc-root">
+      <style>{STYLES}</style>
+      {user?.role === 'BARBER'
+        ? <BarberApp context={context} userId={user.id} />
+        : <OwnerApp context={context} />}
+    </div>
   );
 }
