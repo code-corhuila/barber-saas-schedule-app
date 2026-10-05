@@ -46,6 +46,8 @@ export interface NewException {
 export interface Barber {
   id: string;
   userId: string;
+  /** The copy barbershop-api keeps from identity-auth (ADR-014); null only for older profiles. */
+  fullName: string | null;
   experienceYears: number;
   specialties: { id: string; specialtyName: string }[];
 }
