@@ -1,3 +1,4 @@
+import { barberName } from '../schedule/barber-name';
 import { listBarbers } from '../schedule/schedule-api';
 import type { ApiClient } from '../shell-contract';
 import { LoadView } from '../ui/LoadView';
@@ -17,11 +18,11 @@ export function BarbersPage({ api, onOpen }: { api: ApiClient; onOpen(barberId: 
           <button key={barber.id} type="button" className="sc-card" onClick={() => onOpen(barber.id)}>
             <span className="sc-logo" aria-hidden="true">✂</span>
             <span className="sc-grow">
-              <p className="sc-title">{barber.experienceYears} años de experiencia</p>
+              <p className="sc-title">{barberName(barber)}</p>
+              <p className="sc-muted">{barber.experienceYears} años de experiencia</p>
               {barber.specialties.length > 0 && (
                 <p className="sc-gold">{barber.specialties.map((s) => s.specialtyName).join(' · ')}</p>
               )}
-              <p className="sc-muted">Perfil {barber.id.slice(0, 8)}</p>
             </span>
           </button>
         ))}
