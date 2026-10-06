@@ -3,7 +3,7 @@
  * with its own prefix, so it never collides with another domain app's styles in the same page.
  */
 export const STYLES = `
-.sc-root { min-height: 100%; background: #121212; color: #fff; padding-bottom: 5rem; }
+.sc-root { min-height: 100%; background: #121212; color: #fff; }
 .sc-page { max-width: 40rem; margin: 0 auto; padding: 1rem; }
 .sc-header { font-size: 1.375rem; font-weight: 700; margin: .5rem 0 .75rem; }
 .sc-center { display: grid; place-items: center; gap: .75rem; padding: 3rem 1rem; text-align: center; }
@@ -28,8 +28,10 @@ export const STYLES = `
 .sc-banner { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; }
 .sc-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
 .sc-chip { background: #2a2a2a; color: #d4af37; border-radius: 999px; padding: .1rem .6rem; font-size: .75rem; }
-.sc-footer { position: fixed; left: 0; right: 0; bottom: 0; padding: .75rem 1rem; background: #121212;
-  border-top: 1px solid #2a2a2a; }
+/* Sticky, not fixed: a fixed bar depends on the containing block the shell gives it, and on the phone
+   the cards showed through below it. Sticky stays in the flow at the bottom of the scrolling area. */
+.sc-footer { position: sticky; bottom: 0; z-index: 1; margin: 0 -1rem -1rem; padding: .75rem 1rem 1rem;
+  background: #121212; border-top: 1px solid #2a2a2a; }
 .sc-tabs { --background: #1e1e1e; margin-bottom: .75rem; }
 .sc-tabs ion-segment-button { --color: #888; --color-checked: #d4af37; --indicator-color: #d4af37; }
 .sc-field { margin-bottom: .75rem; }
