@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { IonButton, IonInput, IonSpinner } from '@ionic/react';
+import { IonButton, IonSpinner } from '@ionic/react';
 import { getWeek, setWeek } from '../schedule/schedule-api';
 import { addBlock, DAYS, editorFrom, removeBlock, toSlots, updateBlock, validateWeek, type WeekEditor }
   from '../schedule/week-editor';
 import type { ApiClient } from '../shell-contract';
 import { LoadView } from '../ui/LoadView';
+import { TimeInput } from '../ui/TimeInput';
 import { messageOf, useLoad } from '../ui/load';
 
 interface WeekPageProps {
@@ -78,17 +79,13 @@ export function WeekPage({ api, barberId, editable, onBack, onExceptions }: Week
                     {editable ? (
                       <>
                         <div className="sc-field" style={{ flex: 1, marginBottom: 0 }}>
-                          <IonInput type="time" aria-label={`${name}, inicio del bloque ${index + 1}`}
-                                    value={block.startTime}
-                                    onIonInput={(e) => setEditor(updateBlock(editor, day, index,
-                                      { startTime: String(e.detail.value ?? '') }))} />
+                          <TimeInput ariaLabel={`${name}, inicio del bloque ${index + 1}`} value={block.startTime}
+                                     onChange={(startTime) => setEditor(updateBlock(editor, day, index, { startTime }))} />
                         </div>
                         <span className="sc-muted">a</span>
                         <div className="sc-field" style={{ flex: 1, marginBottom: 0 }}>
-                          <IonInput type="time" aria-label={`${name}, fin del bloque ${index + 1}`}
-                                    value={block.endTime}
-                                    onIonInput={(e) => setEditor(updateBlock(editor, day, index,
-                                      { endTime: String(e.detail.value ?? '') }))} />
+                          <TimeInput ariaLabel={`${name}, fin del bloque ${index + 1}`} value={block.endTime}
+                                     onChange={(endTime) => setEditor(updateBlock(editor, day, index, { endTime }))} />
                         </div>
                         <button type="button" className="sc-remove" aria-label={`Quitar bloque ${index + 1} del ${name}`}
                                 onClick={() => setEditor(removeBlock(editor, day, index))}>×</button>
