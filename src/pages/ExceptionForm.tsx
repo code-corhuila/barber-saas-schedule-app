@@ -48,6 +48,7 @@ export function ExceptionForm({ api, barberId, onClose, onSaved }: ExceptionForm
           <h2 className="sc-header">Nuevo día especial</h2>
           <div className="sc-field">
             <IonInput type="date" label="Fecha" labelPlacement="stacked" value={form.date}
+                      helperText="El día que no sigue la semana normal."
                       aria-invalid={errors.date ? 'true' : 'false'}
                       onIonInput={(e) => set({ date: String(e.detail.value ?? '') })} />
             {errors.date && <div className="sc-field-error">{errors.date}</div>}
@@ -70,7 +71,10 @@ export function ExceptionForm({ api, barberId, onClose, onSaved }: ExceptionForm
           )}
           <Field id="exception-reason" label="Motivo (opcional)" value={form.reason} error={errors.reason}
                  onChange={(reason) => set({ reason })} placeholder="Festivo, cita médica…" />
-          <p className="sc-hint">Ese día solo cuenta este horario; la semana normal no se suma.</p>
+          <p className="sc-hint">
+            {form.dayOff ? 'Ese día el barbero no atiende, aunque la semana normal diga lo contrario.'
+              : 'Ese día solo cuenta este horario; la semana normal no se suma.'}
+          </p>
           {failure && <div className="sc-alert" role="alert">{failure}</div>}
           <IonButton expand="block" type="submit" className="sc-primary" disabled={pending}>
             {pending ? <IonSpinner name="crescent" aria-label="Guardando" /> : 'Guardar'}
