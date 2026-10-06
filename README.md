@@ -62,7 +62,7 @@ npm start      # builds and serves dist/schedule at http://localhost:4303 (CORS 
 ```
 
 Then start the shell (`npm start` in `barber-saas-front`) and the platform (`./scripts/up.sh dev`
-in `barber-saas-infra`), and open `/schedule`.
+in `barber-saas-infra-postgres`), and open `/schedule`.
 
 ### Where the data is
 
