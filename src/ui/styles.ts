@@ -29,8 +29,9 @@ export const STYLES = `
 .sc-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
 .sc-chip { background: #2a2a2a; color: #d4af37; border-radius: 999px; padding: .1rem .6rem; font-size: .75rem; }
 /* Sticky, not fixed: a fixed bar depends on the containing block the shell gives it, and on the phone
-   the cards showed through below it. Sticky stays in the flow at the bottom of the scrolling area. */
-.sc-footer { position: sticky; bottom: 0; z-index: 1; margin: 0 -1rem -1rem; padding: .75rem 1rem 1rem;
+   the cards showed through below it. Sticky stays in the flow at the bottom of the scrolling area.
+   z-index 10, not 1: each ion-input of the cards opens its own layer and was drawn over the bar. */
+.sc-footer { position: sticky; bottom: 0; z-index: 10; margin: 0 -1rem -1rem; padding: .75rem 1rem 1rem;
   background: #121212; border-top: 1px solid #2a2a2a; }
 .sc-tabs { --background: #1e1e1e; margin-bottom: .75rem; }
 .sc-tabs ion-segment-button { --color: #888; --color-checked: #d4af37; --indicator-color: #d4af37; }
